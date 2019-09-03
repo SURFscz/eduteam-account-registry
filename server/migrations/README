@@ -1,0 +1,5 @@
+Generic single-database configuration.
+
+source .venv/bin/activate
+cd ./server
+alembic -c ./migrations/alembic.ini revision -m "description"

@@ -1,0 +1,16 @@
+database:
+  uri: "mysql+pymysql://ear:ear@localhost/ear_test"
+
+secret_key: secret
+
+api_users:
+  - name: "satosa"
+    password: "secret"
+
+mail:
+  host: localhost
+  port: 1025
+  sender_name: eduTEAMS
+  sender_email: no-reply@eduteams.org
+
+base_url: http://localhost:3000/
