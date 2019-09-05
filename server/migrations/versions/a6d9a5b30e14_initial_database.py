@@ -1,4 +1,3 @@
-# -*- coding: future_fstrings -*-
 """Initial database
 
 Revision ID: a6d9a5b30e14
@@ -9,6 +8,7 @@ Create Date: 2019-01-07 10:28:20.335581
 
 import sqlalchemy as sa
 from alembic import op
+from sqlalchemy import text
 
 # revision identifiers, used by Alembic.
 revision = 'a6d9a5b30e14'
@@ -22,9 +22,9 @@ def upgrade():
                     sa.Column("id", sa.Integer(), primary_key=True, nullable=False, autoincrement=True),
                     sa.Column("cuid", sa.String(length=255), nullable=False),
                     sa.Column("attributes", sa.JSON(), nullable=True),
-                    sa.Column("is_complete", sa.Boolean(), nullable=True),
-                    sa.Column("is_disabled", sa.Boolean(), nullable=True),
-                    sa.Column("is_deleted", sa.Boolean(), nullable=True),
+                    sa.Column("is_complete", sa.Boolean(), default=False, nullable=False),
+                    sa.Column("is_disabled", sa.Boolean(), default=False, nullable=False),
+                    sa.Column("is_deleted", sa.Boolean(), default=False, nullable=False),
                     sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("CURRENT_TIMESTAMP"),
                               nullable=False),
                     sa.Column("modified_at", sa.DateTime(timezone=True),
@@ -59,7 +59,7 @@ def upgrade():
 
     op.create_table("aups",
                     sa.Column("id", sa.Integer(), primary_key=True, nullable=False, autoincrement=True),
-                    sa.Column("au_version", sa.String(length=36), nullable=False),
+                    sa.Column("au_version", sa.String(length=255), nullable=False),
                     sa.Column("user_id", sa.Integer(), sa.ForeignKey("users.id", ondelete="cascade"), nullable=False),
                     sa.Column("agreed_at", sa.DateTime(timezone=True), server_default=sa.text("CURRENT_TIMESTAMP"),
                               nullable=False)
@@ -68,10 +68,17 @@ def upgrade():
     op.create_table("iuids",
                     sa.Column("id", sa.Integer(), primary_key=True, nullable=False, autoincrement=True),
                     sa.Column("iuid", sa.String(length=255), nullable=False),
-                    sa.Column("remote_account_id", sa.Integer(), sa.ForeignKey("remote_accounts.id", ondelete="cascade"), nullable=False),
+                    sa.Column("remote_account_id", sa.Integer(),
+                              sa.ForeignKey("remote_accounts.id", ondelete="cascade"), nullable=False),
                     sa.Column("agreed_at", sa.DateTime(timezone=True), server_default=sa.text("CURRENT_TIMESTAMP"),
                               nullable=False)
                     )
+
+    conn = op.get_bind()
+    conn.execute(text("ALTER TABLE iuids ADD UNIQUE INDEX iuids_unique_iuid(iuid)"))
+    conn.execute(text("ALTER TABLE users ADD UNIQUE INDEX users_unique_cuid(cuid)"))
+    conn.execute(
+        text("ALTER TABLE email_verifications ADD UNIQUE INDEX email_verifications_unique_code(code, user_id)"))
 
 
 def downgrade():

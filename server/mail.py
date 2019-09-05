@@ -1,4 +1,3 @@
-# -*- coding: future_fstrings -*-
 from threading import Thread
 
 from flask import current_app, render_template

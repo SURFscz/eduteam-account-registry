@@ -1,5 +1,3 @@
-# -*- coding: future_fstrings -*-
-import datetime
 import os
 
 from flask_jsontools.formatting import JsonSerializableBase
@@ -51,6 +49,14 @@ class User(Base, db.Model):
     created_at = db.Column("created_at", db.DateTime(timezone=True), server_default=db.text("CURRENT_TIMESTAMP"),
                            nullable=False)
 
+    @classmethod
+    def find_by_iuid_values(cls, iuid_values):
+        return User.query\
+            .join(User.remote_accounts)\
+            .join(RemoteAccount.iuids)\
+            .filter(Iuid.iuid.in_(iuid_values))\
+            .all()
+
 
 class RemoteAccount(Base, db.Model):
     __tablename__ = "remote_accounts"
@@ -82,7 +88,7 @@ class EmailVerification(Base, db.Model):
 class Aup(Base, db.Model):
     __tablename__ = "aups"
     id = db.Column("id", db.Integer(), primary_key=True, nullable=False, autoincrement=True)
-    au_version = db.Column("au_version", db.String(length=36), nullable=False)
+    au_version = db.Column("au_version", db.String(length=255), nullable=False)
     user_id = db.Column(db.Integer(), db.ForeignKey("users.id"))
     user = db.relationship("User", back_populates="aups")
     agreed_at = db.Column("agreed_at", db.DateTime(timezone=True), server_default=db.text("CURRENT_TIMESTAMP"),

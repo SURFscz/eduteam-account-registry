@@ -1,13 +1,5 @@
 import spinner from "../utils/Spin";
 import {isEmpty} from "../utils/Utils";
-import {emitter} from "../utils/Events";
-
-let impersonator = null;
-emitter.addListener("impersonation", selectedUser => {
-    impersonator = selectedUser;
-});
-
-const impersonation_attributes = ["id", "uid", "name", "email"];
 
 //Internal API
 function validateResponse(showErrorDialog) {
@@ -16,7 +8,7 @@ function validateResponse(showErrorDialog) {
 
         if (!res.ok) {
             if (res.type === "opaqueredirect") {
-                setTimeout(() => window.location.reload(true), 100);
+                setTimeout(() => window.location.reload(), 100);
                 return res;
             }
             const error = new Error(res.statusText);
@@ -32,7 +24,7 @@ function validateResponse(showErrorDialog) {
         const sessionAlive = res.headers.get("x-session-alive");
 
         if (sessionAlive !== "true") {
-            window.location.reload(true);
+            window.location.reload();
         }
         return res;
 
@@ -45,10 +37,6 @@ function validFetch(path, options, headers = {}, showErrorDialog = true) {
         "Content-Type": "application/json",
         ...headers
     };
-    if (impersonator) {
-        impersonation_attributes.forEach(attr =>
-            contentHeaders[`X-IMPERSONATE-${attr.toUpperCase()}`] = impersonator[attr]);
-    }
     const fetchOptions = Object.assign({}, {headers: contentHeaders}, options, {
         credentials: "same-origin",
         redirect: "manual"
@@ -71,15 +59,6 @@ function postPutJson(path, body, method, showErrorDialog = true) {
     return fetchJson(path, {method: method, body: JSON.stringify(body)}, {}, showErrorDialog);
 }
 
-function fetchDelete(path) {
-    return validFetch(path, {method: "delete"});
-}
-
-function queryParam(options) {
-    const entries = Object.entries(options[0]);
-    return entries.reduce((acc, entry) => isEmpty(entry[1]) ? acc : acc + `${entry[0]}=${entry[1]}&`, "?");
-}
-
 //Base
 export function health() {
     return fetchJson("/health");
@@ -91,34 +70,7 @@ export function config() {
 
 //Users
 export function me(config) {
-    const headers = (config.local) ? {
-        "OIDC_CLAIM_cmuid": "urn:john",
-        // "OIDC_CLAIM_cmuid": "urn:temp",
-        "OIDC_CLAIM_Nickname": "jëhny",
-        "OIDC_CLAIM_Edumember-Is-Member-Of": "Release 0.6:CO:members:all,Release 0.6:CO:members:active",
-        "OIDC_CLAIM_Eduperson-Affiliation": "librarywalkin",
-        "OIDC_CLAIM_Schac-Home-Organisation": "scz.lab.surf.nl",
-        "OIDC_CLAIM_Family-Name": "Doe",
-        "OIDC_CLAIM_Given-Name": "John",
-        "OIDC_CLAIM_Email": "jdoe@example.org"
-    } : {};
-    return fetchJson("/api/users/me", {}, headers, false);
-}
-
-export function refreshUser() {
-    return fetchJson("/api/users/refresh");
-}
-
-export function other(uid) {
-    return fetchJson(`/api/users/other?uid=${encodeURIComponent(uid)}`);
-}
-
-export function searchUsers(q, organisationId, collaborationId, limitToOrganisationAdmins, limitToCollaborationAdmins) {
-    const organisationIdPart = isEmpty(organisationId) ? "" : `&organisation_id=${organisationId}`;
-    const collaborationIdPart = isEmpty(collaborationId) ? "" : `&collaboration_id=${collaborationId}`;
-    const organisationAdminsPart = limitToOrganisationAdmins ? "&organisation_admins=true" : "";
-    const collaborationAdminsPart = limitToCollaborationAdmins ? "&collaboration_admins=true" : "";
-    return fetchJson(`/api/users/search?q=${encodeURIComponent(q)}${organisationIdPart}${collaborationIdPart}${organisationAdminsPart}${collaborationAdminsPart}`);
+    return fetchJson("/api/users/me", {}, {}, false);
 }
 
 export function updateUser(body) {

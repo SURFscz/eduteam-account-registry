@@ -1,4 +1,3 @@
-# -*- coding: future_fstrings -*-
 import json
 import os
 from pathlib import Path
@@ -33,4 +32,5 @@ class TestBase(AbstractTest):
         self.assertDictEqual({"message": "http://localhost/api/nope not found"}, res)
 
     def test_401(self):
-        self.get("/api/users/search", with_basic_auth=False, response_status_code=401)
+        response = self.client.get("/api/users/me")
+        self.assertEqual(401, response.status_code)

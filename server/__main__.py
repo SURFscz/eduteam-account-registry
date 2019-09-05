@@ -1,4 +1,3 @@
-# -*- coding: future_fstrings -*-
 import logging
 import os
 import sys
@@ -13,8 +12,10 @@ from munch import munchify
 from sqlalchemy import text
 from sqlalchemy.exc import OperationalError
 
+from server.api.aup import aup_api
 from server.api.base import base_api
 from server.api.dynamic_extended_json_encoder import DynamicExtendedJSONEncoder
+from server.api.provision import provision_api
 from server.api.user import user_api
 from server.db.db import db, db_migrations
 from server.saml.service_provider import configure_saml
@@ -76,7 +77,10 @@ app = Flask(__name__)
 app.secret_key = config.secret_key
 
 app.register_blueprint(base_api)
+app.register_blueprint(aup_api)
 app.register_blueprint(user_api)
+if test:
+    app.register_blueprint(provision_api)
 
 app.register_error_handler(404, page_not_found)
 

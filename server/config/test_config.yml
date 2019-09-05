@@ -7,10 +7,20 @@ api_users:
   - name: "satosa"
     password: "secret"
 
+saml:
+  sp_entity_id: https://eduteam-account-registry-localhost
+  idp_entity_id: https://engine.test.surfconext.nl/authentication/idp/metadata
+  idp_sso_url: https://engine.test.surfconext.nl/authentication/idp/single-sign-on
+  hash_identifiers_attribute: eduPersonAffiliation
+
 mail:
   host: localhost
   port: 1025
   sender_name: eduTEAMS
   sender_email: no-reply@eduteams.org
+
+aup:
+  pdf: eduTEAMS-AcceptableUsePolicy-050919-1109-5194.pdf
+  html: eduTEAMS-AcceptableUsePolicy-050919-1109-5194.html
 
 base_url: http://localhost:3000/

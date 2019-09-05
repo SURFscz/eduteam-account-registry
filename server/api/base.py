@@ -1,12 +1,10 @@
-# -*- coding: future_fstrings -*-
 import json
 import logging
 import os
-import re
 from functools import wraps
 from pathlib import Path
 
-from flask import Blueprint, jsonify, current_app, request as current_request, session, g as request_context, redirect
+from flask import Blueprint, jsonify, current_app, request as current_request, session
 from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.exceptions import HTTPException, Unauthorized, BadRequest
 
@@ -15,39 +13,36 @@ from server.db.db import db
 
 base_api = Blueprint("base_api", __name__, url_prefix="/")
 
-white_listing = ["health", "config", "info", "api/users/me", "api/collaborations/find_by_name"]
-external_api_listing = ["api/collaborations"]
+white_listing = ["health", "config", "info", "provision", "login"]
+trusted_api = ["user-patch", "check-identity"]
+session_user_key = "session_user_key"
+
+ok_response = {"status": "ok"}
 
 
-def auth_filter(config):
+def _get_user(app_config, auth):
+    if not auth:
+        return None
+    users = list(
+        filter(lambda user: user.name == auth.username and user.password == auth.password, app_config.api_users))
+    return users[0] if len(users) > 0 else None
+
+
+def auth_filter(app_config):
     url = current_request.base_url
 
-    if "user" in session and "guest" in session["user"] and not session["user"]["guest"]:
-        request_context.is_authorized_api_call = False
-        return
-
-    is_whitelisted_url = False
     for u in white_listing:
         if u in url:
-            is_whitelisted_url = True
+            return
 
-    is_external_api_url = False
-    for u in external_api_listing:
-        if u in url:
-            is_external_api_url = True
+    trusted_api_call = [True for u in trusted_api if u in url]
+    if session_user_key in session and not trusted_api_call:
+        return
 
     auth = current_request.authorization
-    is_authorized_api_call = bool(auth and len(get_user(config, auth)) > 0)
-
-    if not (is_whitelisted_url or is_authorized_api_call):
-        authorization_header = current_request.headers.get("Authorization")
-        is_authorized_api_key = authorization_header and authorization_header.lower().startswith("bearer")
-        if not is_authorized_api_key or not is_external_api_url:
-            raise Unauthorized(description="Invalid username or password")
-
-    request_context.is_authorized_api_call = is_authorized_api_call
-    if is_authorized_api_call:
-        request_context.api_user = get_user(config, auth)[0]
+    api_user = _get_user(app_config, auth)
+    if not auth and not api_user:
+        raise Unauthorized(description="Invalid username or password")
 
 
 def query_param(key, required=True, default=None):
@@ -55,14 +50,6 @@ def query_param(key, required=True, default=None):
     if required and value is None:
         raise BadRequest(f"Query parameter {key} is required, but missing")
     return value
-
-
-def replace_full_text_search_boolean_mode_chars(input_param):
-    return re.sub("[\\W]", " ", input_param)
-
-
-def get_user(config, auth):
-    return list(filter(lambda user: user.name == auth.username and user.password == auth.password, config.api_users))
 
 
 def ctx_logger(name=None):
@@ -74,7 +61,7 @@ def _add_custom_header(response):
     response.headers["server"] = ""
 
 
-_audit_trail_methods = ["PUT", "POST", "DELETE"]
+_audit_trail_methods = ["PUT", "PATCH", "POST", "DELETE"]
 
 
 def _audit_trail():
@@ -89,7 +76,7 @@ def json_endpoint(f):
     def wrapper(*args, **kwargs):
         try:
             session.modified = True
-            # auth_filter(current_app.app_config)
+            auth_filter(current_app.app_config)
             body, status = f(*args, **kwargs)
             response = jsonify(body)
             _audit_trail()
@@ -113,11 +100,6 @@ def json_endpoint(f):
             return response
 
     return wrapper
-
-
-@base_api.route("/", strict_slashes=False)
-def index():
-    return redirect(current_app.app_config.base_url)
 
 
 @base_api.route("/health", strict_slashes=False)
