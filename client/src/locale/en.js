@@ -1,33 +1,18 @@
 import I18n from "i18n-js";
 
 I18n.translations.en = {
-    code: "EN",
-    name: "English",
-    select_locale: "Select English",
 
     header: {
-        title: "Collaboration Management System",
+        title: "eduTEAMS Account Registry",
         links: {
-            login: "Login",
-            logout: "Logout",
             help: "Help",
             helpUrl: "https://github.com/SURFscz/SBS/wiki"
         },
-        impersonator: "You are really <em>{{impersonator}}</em>,<br/>but you are impersonating <em>{{currentUser}}</em>.<br/><br/>On the <strong>Impersonate</strong> page<br/> you can change identity<br/>or become you again."
-
     },
     navigation: {
         home: "Home",
         registration: "Registration",
-        collaborations: "Collaborations",
-        organisations: "Organisations",
-        services: "Services",
-        profile: "Profile",
-        impersonate: "Impersonate",
-    },
-    login: {
-        title: "Welcome to the Collaboration Management System",
-        subTitle: "Please login..."
+        account: "Account",
     },
     home: {
         title: "My collaboration memberships",

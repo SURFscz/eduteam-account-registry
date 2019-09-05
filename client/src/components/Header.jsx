@@ -9,6 +9,8 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import UserProfile from "./UserProfile";
 import ReactTooltip from "react-tooltip";
 import {getParameterByName} from "../utils/QueryParameters";
+import Button from "./Button";
+import {provision} from "../api";
 
 export default class Header extends React.PureComponent {
 
@@ -39,24 +41,8 @@ export default class Header extends React.PureComponent {
 
     renderDropDown = currentUser => this.state.dropDownActive ? <UserProfile currentUser={currentUser}/> : null;
 
-    login = e => {
-        stopEvent(e);
-        const state = getParameterByName("state", window.location.search);
-        const guid = pseudoGuid();
-        const queryParameter = isEmpty(state) ? `?guid=${guid}` : `?guid=${guid}&state=${encodeURIComponent(state)}`;
-        window.location.href = `/login${queryParameter}`;
-    };
-
-    logout = e => {
-        stopEvent(e);
-        const baseUrl = this.props.config.base_url;
-        const guid = pseudoGuid();
-        window.location.href = `/redirect_uri?logout=${baseUrl}&guid=${guid}`;
-    };
-
     render() {
-        const {currentUser, impersonator} = this.props;
-        const displayLogin = currentUser.guest;
+        const {currentUser} = this.props;
         return (
             <div className={`header-container`}>
                 <div className="header">
@@ -64,38 +50,13 @@ export default class Header extends React.PureComponent {
 
                     <p className="title first">{I18n.t("header.title")}</p>
                     <ul className="links">
-                        {displayLogin && <li className="login">
-                            <a href="/login" onClick={this.login}>{I18n.t("header.links.login")}</a>
-                        </li>}
-                        {!displayLogin && <li className="login">
-                            <a href="/logout" onClick={this.logout}>{I18n.t("header.links.logout")}</a>
-                        </li>}
-
-                        {impersonator && <li className="impersonator border-left">
-                            <NavLink to="/impersonate">
-                            <span data-tip data-for="impersonator">
-                                <FontAwesomeIcon icon="user-secret"/></span>
-                                <ReactTooltip id="impersonator" type="light" effect="solid" data-html={true}>
-                                    <p dangerouslySetInnerHTML={{
-                                        __html: I18n.t("header.impersonator", {
-                                            currentUser: currentUser.name,
-                                            impersonator: impersonator.name
-                                        })
-                                    }}/>
-                                </ReactTooltip>
-                            </NavLink>
-                        </li>}
-                        {!currentUser.guest &&
                         <li className="user-profile border-left">
                             {this.renderProfileLink(currentUser)}
                             {this.renderDropDown(currentUser)}
-                        </li>}
+                        </li>
                         <li className="help border-left">
                             <a href={I18n.t("header.links.helpUrl")} rel="noopener noreferrer"
                                target="_blank">{I18n.t("header.links.help")}</a>
-                        </li>
-                        <li>
-                            <LanguageSelector currentUser={currentUser}/>
                         </li>
                     </ul>
                 </div>

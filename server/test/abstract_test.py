@@ -35,12 +35,6 @@ class AbstractTest(TestCase):
         config.test = True
         AbstractTest.app = app
 
-    @staticmethod
-    def read_file(file_name):
-        file = f"{os.path.dirname(os.path.realpath(__file__))}/data/{file_name}"
-        with open(file) as f:
-            return f.read()
-
     def provision(self, cuid=john_cuid):
         with requests.Session():
             self.client.post("/api/provision", data=json.dumps({"cuid": cuid}),

@@ -11,9 +11,10 @@ aup_api = Blueprint("aup_api", __name__, url_prefix="/api/aup")
 @aup_api.route("/", methods=["GET"], strict_slashes=False)
 @json_endpoint
 def links():
+    from server.__main__ import read_file
     return {
                "pdf": f"/static/{current_app.app_config.aup.pdf}",
-               "html": f"/static/{current_app.app_config.aup.html}",
+               "html": read_file(f"./static/{current_app.app_config.aup.html}")
            }, 200
 
 

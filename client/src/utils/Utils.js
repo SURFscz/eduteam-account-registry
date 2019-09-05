@@ -24,13 +24,6 @@ export function isEmpty(obj) {
     return false;
 }
 
-export function groupBy(arr, key) {
-    return arr.reduce((acc, item) => {
-        (acc[item[key]] = acc[item[key]] || []).push(item);
-        return acc;
-    }, {});
-}
-
 export function sortObjects(objects, attribute, reverse) {
     return [...objects].sort((a, b) => {
         const aS = valueForSort(attribute, a).toString();

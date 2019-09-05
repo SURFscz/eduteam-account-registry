@@ -9,7 +9,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.exceptions import HTTPException, Unauthorized, BadRequest
 
 from server.api.context_logger import CustomAdapter
-from server.db.db import db
+from server.db.db import db, User
 
 base_api = Blueprint("base_api", __name__, url_prefix="/")
 
@@ -113,7 +113,9 @@ def health():
 def config():
     base_url = current_app.app_config.base_url
     base_url = base_url[:-1] if base_url.endswith("/") else base_url
-    return {"local": current_app.config["LOCAL"],
+    local_ = current_app.config["LOCAL"]
+    return {"local": local_,
+            "cuid": User.query.all()[0].cuid if local_ else None,
             "base_url": base_url}, 200
 
 

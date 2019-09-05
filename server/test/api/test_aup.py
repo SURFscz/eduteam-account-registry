@@ -3,7 +3,7 @@ from server.test.abstract_test import AbstractTest
 from server.test.seed import john_cuid
 
 
-class TestUser(AbstractTest):
+class TestAup(AbstractTest):
 
     @staticmethod
     def _aup_count():

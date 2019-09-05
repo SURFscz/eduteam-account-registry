@@ -79,7 +79,7 @@ app.secret_key = config.secret_key
 app.register_blueprint(base_api)
 app.register_blueprint(aup_api)
 app.register_blueprint(user_api)
-if test:
+if test or is_local:
     app.register_blueprint(provision_api)
 
 app.register_error_handler(404, page_not_found)

@@ -1,11 +1,12 @@
 import datetime
+import json
 
 from flask import Blueprint, request as current_request, session, url_for, redirect
 from secrets import token_urlsafe
 from sqlalchemy.orm import contains_eager
 from werkzeug.exceptions import BadRequest
 
-from server.api.base import json_endpoint, query_param, session_user_key, ok_response
+from server.api.base import json_endpoint, query_param, session_user_key, ok_response, ctx_logger
 from server.db.db import User, RemoteAccount, Iuid, db, EmailVerification
 from server.db.defaults import default_expiry_date
 from server.db.models import flatten
@@ -133,5 +134,13 @@ def verify_email():
         .filter(EmailVerification.code == code) \
         .filter(EmailVerification.expires_at >= datetime.datetime.now()) \
         .one()
+
     db.session.delete(email_verification)
     return ok_response, 201
+
+
+@user_api.route("/error", methods=["POST"], strict_slashes=False)
+@json_endpoint
+def error():
+    ctx_logger("user").exception(json.dumps(current_request.json))
+    return {}, 201
