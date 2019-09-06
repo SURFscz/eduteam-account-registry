@@ -1,7 +1,7 @@
 import datetime
 import json
 
-from flask import Blueprint, request as current_request, session, url_for, redirect
+from flask import Blueprint, request as current_request, session, url_for, redirect, current_app
 from secrets import token_urlsafe
 from sqlalchemy.orm import contains_eager
 from werkzeug.exceptions import BadRequest
@@ -81,7 +81,7 @@ def load_user():
     cuid = session[session_user_key]
     user = User.query \
         .join(User.remote_accounts) \
-        .join(User.email_verifications) \
+        .outerjoin(User.email_verifications) \
         .options(contains_eager(User.remote_accounts)) \
         .options(contains_eager(User.email_verifications)) \
         .filter(User.cuid == cuid) \
@@ -119,7 +119,7 @@ def complete():
 @user_api.route("/login")
 def login():
     session[redirect_url_session_key] = query_param(redirect_url_session_key)
-    return redirect(url_for("flask_saml2_sp.login"))
+    return redirect(url_for("flask_saml2_sp.login_idp", entity_id=current_app.app_config.saml.idp_entity_id))
 
 
 @user_api.route("/verify", methods=["POST"], strict_slashes=False)

@@ -1,13 +1,12 @@
+import os
 import uuid
 
 import OpenSSL
-from flask import url_for, redirect, current_app, session
-import os
+from flask import redirect, current_app, session
 from flask_saml2.sp import ServiceProvider, AuthData
 
 from server.api.base import session_user_key
 from server.db.db import User, db, RemoteAccount, Iuid
-
 from server.saml.saml_mapping import saml2_oid_mapping, unidentified_idp
 
 
@@ -19,7 +18,7 @@ def read_file(file_name):
 
 class SP(ServiceProvider):
     def get_default_login_return_url(self):
-        return url_for("base_api.index", _external=True)
+        return current_app.app_config.base_url
 
     def get_sp_entity_id(self) -> str:
         return current_app.app_config.saml.sp_entity_id
@@ -28,6 +27,10 @@ class SP(ServiceProvider):
         attributes = auth_data.to_dict()["data"]["attributes"]
         user_attributes = {saml2_oid_mapping[k]: v for k, v in attributes.items() if k in saml2_oid_mapping}
         iuid_values = user_attributes[current_app.app_config.saml.hash_identifiers_attribute]
+        if not iuid_values:
+            raise ValueError(f"No attribute value(s) for {current_app.app_config.saml.hash_identifiers_attribute}")
+        if isinstance(iuid_values, str):
+            iuid_values = [iuid_values]
         users = User.find_by_iuid_values(iuid_values)
         if len(users) == 0:
             source_entity_id = user_attributes.get("schacHomeOrganization", unidentified_idp)

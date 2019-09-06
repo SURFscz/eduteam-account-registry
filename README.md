@@ -57,6 +57,7 @@ To analyze the bundle:
 ```
 yarn analyze
 ```
+Point your browser to http://localhost:5000/api/users/login?redirect_url=http://www.example.com
 
 ### [Testing](#testing)
 

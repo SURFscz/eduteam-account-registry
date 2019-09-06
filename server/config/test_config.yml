@@ -23,4 +23,5 @@ aup:
   pdf: eduTEAMS-AcceptableUsePolicy-050919-1109-5194.pdf
   html: eduTEAMS-AcceptableUsePolicy-050919-1109-5194.html
 
-base_url: http://localhost:3000/
+base_url: http://localhost:3000
+login_url: http://localhost:5000/api/users/login

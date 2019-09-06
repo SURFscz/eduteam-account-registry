@@ -68,10 +68,6 @@ export function config() {
     return fetchJson("/config");
 }
 
-export function provision(config) {
-    return fetchJson("/api/provision", {"cuid": config.cuid}, {}, false);
-}
-
 //Users
 export function me() {
     return fetchJson("/api/users/me", {}, {}, false);

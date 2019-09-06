@@ -3,24 +3,15 @@ import I18n from "i18n-js";
 I18n.translations.en = {
 
     header: {
-        title: "eduTEAMS Account Registry",
+        title: "Account Registry",
         links: {
             help: "Help",
             helpUrl: "https://github.com/SURFscz/SBS/wiki"
         },
     },
     navigation: {
-        home: "Home",
         registration: "Registration",
         account: "Account",
-    },
-    home: {
-        title: "My collaboration memberships",
-        userServiceProfiles: "User service profiles",
-        authorisationGroups: "Authorisation Groups",
-        collaborations: "Collaborations",
-        organisations: "Organisations",
-        backToHome: "Back to home"
     },
     forms: {
         submit: "Add",
@@ -31,10 +22,22 @@ I18n.translations.en = {
         manage: "Overview",
         invalidInput: "Invalid input for {{name}}"
     },
-    explain: {
-        title: "Explanation {{subject}}",
-        impersonate: "Impersonate"
+
+    registration: {
+        title: "The service that you were trying to reach is part of the eduTEAMS ecosystem. You will need to register here before continuing to the service.",
+        agreeToService: "Agree to Service",
+        agreeToServiceIcon: "link",
+        verify: "Verify personal data",
+        verifyIcon: "book",
+        validate: "Validate email",
+        validateIcon: "gavel",
+        registration: "Registration consists out of three steps:",
+        agreeToServiceStep: "Agreeing to the eduTEAMS term of service",
+        verifyStep: "Verifying your personal data",
+        validateStep: "Validating your email",
+        continueToService: "Continue to Term of Service",
     },
+
     user: {
         titleUpdate: "Update your user profile keys",
         ssh_key: "SSH public key",
@@ -45,9 +48,9 @@ I18n.translations.en = {
         totp_key: "TOTP key",
         totp_keyPlaceholder: "Your Google authenticator key",
         totp_keyTooltip: "Google Authenticator key",
-        tiqr_key:"Tiqr key",
-        tiqr_keyPlaceholder:"Your tiqr key",
-        tiqr_keyTooltip:"Tiqr key",
+        tiqr_key: "Tiqr key",
+        tiqr_keyPlaceholder: "Your tiqr key",
+        tiqr_keyTooltip: "Tiqr key",
         ubi_key: "Your UBI key",
         ubi_keyPlaceholder: "Generic U2F/CTAP support",
         ubi_keyTooltip: "Generic U2F/CTAP support",
@@ -72,49 +75,6 @@ I18n.translations.en = {
         currentImpersonationValue: "You are impersonating {{currentUser}}, but you are really {{impersonator}}",
         startImpersonation: "Impersonate",
         clearImpersonation: "Stop impersonating"
-    },
-    registration: {
-        title: "Request access to the resources of {{collaboration}}",
-        start: "Start",
-        formTitle: "Request access to the resources of {{collaboration}}",
-        formEndedTitle: "Your request to join {{collaboration}} is sent for review",
-        request: "Request",
-        continue: "Continue",
-        requiredCollaboration: "Invalid request. Collaboration need to be specified.",
-        unknownCollaboration: "The Collaboration with the name {{collaboration}} does not exists",
-        step1: {
-            title: "Link your account",
-            sub: "Select organisation",
-            icon: "link",
-            tooltip: "You will be redirected to select<br/>your organisation and after you<br/>have logged in you will be<br/>redirected to proceed with step 2.",
-        },
-        step2: {
-            title: "Request access",
-            sub: "Motivation & Terms",
-            icon: "book",
-            tooltip: "When you have chosen your organisation<br/> then you'll need to optionally <br/>motivate your request <br/>and review & accept our terms",
-            registrationInfo: "We will registrate the following information:",
-            motivationInfo: "Why would you like to join the collaboration {{collaboration}}?",
-            motivationPlaceholder: "Describe your work or need to access the resources at the collaboration in order for an admin to grant you the proper user rights?",
-            reference: "Do you have a reference within {{collaboration}}?",
-            referencePlaceholder: "Write down the names of people you know within {{collaboration}} like co-researchers.",
-            policy: "Our Policy",
-            policyInfo: "You must agree that your information will be used for resources linked to {{collaboration}}. Please check out <a target=\"_blank\" rel=\"noopener noreferrer\" href=\"https://wiki.surfnet.nl/display/SCZ/SCZ+Privacy+Policy\"'>Acceptable Use Policy</a> to which you have agreed upon.",
-            policyConfirmation: "I have read the Acceptable Use Policy of {{collaboration}} and accept it"
-        },
-        step3: {
-            title: "Wait for approval",
-            sub: "Approved or denied",
-            icon: "gavel",
-            tooltip: "As a last step we will sent a mail <br/>to the administrator of the service<br/>who wil either approve or deny your request.",
-            info: "Your request has been sent to the collaboration manager who will review your appliance.<br/>His / hers decision will be communicated to you by e-mail",
-            contact: "Still haven't received a message from us? Please contact us via <a href=\"mailto:{{mail}}\">{{mail}}</a>"
-        },
-        flash: {
-            info: "Step {{step}} successfully finished.",
-            success: "Your request to join {{name}} is sent for review",
-            alreadyMember: "Invalid join request: you are already a member of collaboration {{name}}",
-        }
     },
     profile: {
         name: "Name",

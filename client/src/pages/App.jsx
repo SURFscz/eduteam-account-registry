@@ -1,11 +1,11 @@
 import React from "react";
 import "./App.scss";
-import Header from "../components/Header";
+import {Header} from "../components/Header";
 import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
 import NotFound from "../pages/NotFound";
 import ServerError from "../pages/ServerError";
 import Navigation from "../components/Navigation";
-import {config, me, provision, reportError} from "../api";
+import {config, me, reportError} from "../api";
 import "../locale/en";
 import ErrorDialog from "../components/ErrorDialog";
 import Registration from "./Registration";
@@ -14,6 +14,7 @@ import Flash from "../components/Flash";
 import {addIcons} from "../utils/IconLibrary";
 import {pseudoGuid} from "../utils/Utils";
 import Redirect from "react-router-dom/Redirect";
+import Aup from "./Aup";
 
 addIcons();
 
@@ -71,16 +72,11 @@ class App extends React.Component {
         } else {
             config().then(res => {
                 this.setState({config: res}, () => {
-                    const action = res.local ? provision(res) : Promise.resolve();
-                    action().then(() => {
-                        me().then(currentUser => {
-                            if (currentUser && currentUser.cuid) {
-                                this.setState({currentUser: currentUser, loading: false});
-                            } else {
-                                this.handleBackendDown();
-                            }
-                        }).catch(() => this.handleBackendDown())
-                    });
+                    me().then(currentUser => {
+                        this.setState({currentUser: currentUser, loading: false});
+                    }).catch(() => {
+                        window.location.href = res.login_url
+                    })
                 });
             }).catch(() => this.handleBackendDown());
         }
@@ -90,7 +86,7 @@ class App extends React.Component {
 
     render() {
         const {
-            loading, errorDialogAction, errorDialogOpen, currentUser, config
+            loading, errorDialogAction, errorDialogOpen, currentUser
         } = this.state;
         if (loading) {
             return null; // render null when app is not ready yet
@@ -107,15 +103,14 @@ class App extends React.Component {
                     </div>}
                     <Switch>
                         <Route exact path="/" render={() => {
-                            return currentUser.is_complete ? <Redirect to="/registration"/> : <Redirect to="/registration"/>
+                            return currentUser.is_complete ? <Redirect to="/registration"/> :
+                                <Redirect to="/registration"/>
                         }}/>
                         <Route path="/registration"
-                               render={props => <Registration user={currentUser}
-                                                              {...props}/>}/>
+                               render={props => <Registration props={props}/>}/>
 
                         <Route path="/aup"
-                               render={props => <Registration user={currentUser}
-                                                              {...props}/>}/>
+                               render={props => <Aup user={currentUser} {...props}/>}/>
 
                         <Route exact path="/attributes"
                                render={props => <Registration user={currentUser}

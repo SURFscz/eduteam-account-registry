@@ -31,7 +31,7 @@ class TestUser(AbstractTest):
 
     def test_login(self):
         res = self.get("/api/users/login", query_data={"redirect_url": "http://mock-sp"}, response_status_code=302)
-        self.assertEqual("http://localhost/saml/login/", res.location)
+        self.assertTrue(res.location.startswith("http://localhost/saml/login/"))
 
     def test_login_no_redirect_uri(self):
         self.get("/api/users/login", response_status_code=400)

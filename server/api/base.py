@@ -9,11 +9,11 @@ from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.exceptions import HTTPException, Unauthorized, BadRequest
 
 from server.api.context_logger import CustomAdapter
-from server.db.db import db, User
+from server.db.db import db
 
 base_api = Blueprint("base_api", __name__, url_prefix="/")
 
-white_listing = ["health", "config", "info", "provision", "login"]
+white_listing = ["health", "config", "info", "provision", "login", "static"]
 trusted_api = ["user-patch", "check-identity"]
 session_user_key = "session_user_key"
 
@@ -94,8 +94,6 @@ def json_endpoint(f):
             else:
                 response.status_code = 500
             _add_custom_header(response)
-            if response.status_code == 401:
-                response.headers.set("WWW-Authenticate", "Basic realm=\"Please login\"")
             db.session.rollback()
             return response
 
@@ -111,12 +109,13 @@ def health():
 @base_api.route("/config", strict_slashes=False)
 @json_endpoint
 def config():
+    def clean_url(url):
+        return url[:-1] if url.endswith("/") else url
+
     base_url = current_app.app_config.base_url
-    base_url = base_url[:-1] if base_url.endswith("/") else base_url
-    local_ = current_app.config["LOCAL"]
-    return {"local": local_,
-            "cuid": User.query.all()[0].cuid if local_ else None,
-            "base_url": base_url}, 200
+    login_url = current_app.app_config.login_url
+    return {"login_url": clean_url(login_url),
+            "base_url": clean_url(base_url)}, 200
 
 
 @base_api.route("/info", strict_slashes=False)
