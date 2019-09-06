@@ -13,7 +13,8 @@ aup_api = Blueprint("aup_api", __name__, url_prefix="/api/aup")
 def links():
     from server.__main__ import read_file
     return {
-               "pdf": f"/static/{current_app.app_config.aup.pdf}",
+               "pdf_link": current_app.app_config.aup.pdf_link,
+               "pdf": current_app.app_config.aup.pdf,
                "html": read_file(f"./static/{current_app.app_config.aup.html}")
            }, 200
 

@@ -15,6 +15,7 @@ import {addIcons} from "../utils/IconLibrary";
 import {pseudoGuid} from "../utils/Utils";
 import Redirect from "react-router-dom/Redirect";
 import Aup from "./Aup";
+import Attributes from "./Attributes";
 
 addIcons();
 
@@ -113,7 +114,7 @@ class App extends React.Component {
                                render={props => <Aup user={currentUser} {...props}/>}/>
 
                         <Route exact path="/attributes"
-                               render={props => <Registration user={currentUser}
+                               render={props => <Attributes user={currentUser}
                                                               {...props}/>}/>
 
                         <Route exact path="/validate"

@@ -37,7 +37,14 @@ I18n.translations.en = {
         validateStep: "Validating your email",
         continueToService: "Continue to Term of Service",
     },
-
+    aup: {
+        title1: "In ourder to use the eduTEAMS services, you need to agree to a number of rules and regulations.<br>These are explained in the document below.",
+        title2: "For more information and explanations, you can contact <a href='mailto:boss@eduteams.org'>boss@eduteams.org</a>.",
+        title3: "Please read the document and if agreed check the box and proceed to the validation of your personal information",
+        downloadPdf: "Download Acceptable Usage Policy (pdf)",
+        agreeWithTerms: "I agree with the Acceptable Usage Policy",
+        continueToValidation: "Proceed to personal data"
+    },
     user: {
         titleUpdate: "Update your user profile keys",
         ssh_key: "SSH public key",

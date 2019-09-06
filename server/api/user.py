@@ -118,7 +118,7 @@ def complete():
 
 @user_api.route("/login")
 def login():
-    session[redirect_url_session_key] = query_param(redirect_url_session_key)
+    session[redirect_url_session_key] = query_param(redirect_url_session_key, default=current_app.app_config.base_url)
     return redirect(url_for("flask_saml2_sp.login_idp", entity_id=current_app.app_config.saml.idp_entity_id))
 
 
