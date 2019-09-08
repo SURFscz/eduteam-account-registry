@@ -1,9 +1,11 @@
 {% extends "mail_layout.html" %}
-{% block title %}SURFNET Collaboration join-request accepted{% endblock %}
+{% block title %}eduTEAMS Account Registry email code{% endblock %}
 {% block content %}
 
 <p>{{ salutation }},</p>
-<p>Your <strong>request</strong> to join collaboration
+    <p>Use the following code:</p>
+    <p><strong>{{ code }}</strong></p>
+    to verify the email <strong>{{email}}</strong> to join collaboration
     <a href="{{ base_url }}/collaborations/{{ join_request.collaboration.id }}" style="color:#0088CC;">
         <strong>{{ join_request.collaboration.name }}</strong></a> has been <strong>accepted</strong> by the
     administrator {{administrator}} of the collaboration.</p>
