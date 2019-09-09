@@ -7,6 +7,7 @@ from server.db.db import User, RemoteAccount, Iuid, EmailVerification, Aup, meta
 from server.db.defaults import default_expiry_date
 
 john_email = "john.doe@example.org"
+john_email_second = "jdoe@example.org"
 
 email_code = token_urlsafe(6)
 email_code_expired = token_urlsafe(6)
@@ -41,9 +42,6 @@ def seed(db):
                                      attributes=remote_account_attributes,
                                      iuids=[Iuid(iuid=iuid) for iuid in john_iuids])]
     aups = [Aup(au_version="1.0", agreed_at=datetime.datetime.now())]
-    email_verifications = [EmailVerification(code=email_code, email=john_email, expires_at=default_expiry_date()),
-                           EmailVerification(code=email_code_expired, email=john_email,
-                                             expires_at=datetime.datetime.today() - datetime.timedelta(days=15))]
 
     john_attributes = {**remote_account_attributes, **{
         "postal_address": "Gebäude 465\nRaum 325\nBrandenburgische Straße 85\nBerlin",
@@ -52,8 +50,15 @@ def seed(db):
         "preferred_language": "zh-hant"
     }}
     john = User(cuid=john_cuid, attributes=john_attributes, is_complete=True, is_deleted=False, is_disabled=False,
-                remote_accounts=remote_accounts, aups=aups, email_verifications=email_verifications)
+                remote_accounts=remote_accounts, aups=aups)
 
     _persist(db, john)
+
+    email_verification_john = EmailVerification(code=email_code, email=john_email, expires_at=default_expiry_date(),
+                                                user=john)
+    email_verification_john__expired = EmailVerification(code=email_code_expired, email=john_email_second,
+                                                         expires_at=datetime.datetime.today() - datetime.timedelta(
+                                                             days=15), user=john)
+    _persist(db, email_verification_john, email_verification_john__expired)
 
     db.session.commit()

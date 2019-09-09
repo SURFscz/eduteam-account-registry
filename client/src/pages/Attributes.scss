@@ -9,10 +9,18 @@
   padding: $medium-padding;
 
   div.intro {
-    padding: $medium-padding 0;
 
     p {
       margin-bottom: 15px;
+    }
+  }
+
+  p.provided {
+    font-style: italic;
+    margin-left: 15px;
+
+    &.last {
+      margin-top: 15px;
     }
   }
 
@@ -26,8 +34,14 @@
     font-weight: bold;
   }
 
-  div.checkbox {
-    margin-top: 10px;
+  span.error {
+    display: inline-block;
+    margin-left: 5px;
+    color: $red;
+  }
+
+  section.actions {
+    margin-top: 25px;
   }
 
 

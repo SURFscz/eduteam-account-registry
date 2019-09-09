@@ -10,7 +10,6 @@ import "../locale/en";
 import ErrorDialog from "../components/ErrorDialog";
 import Registration from "./Registration";
 import Footer from "../components/Footer";
-import Flash from "../components/Flash";
 import {addIcons} from "../utils/IconLibrary";
 import {pseudoGuid} from "../utils/Utils";
 import Redirect from "react-router-dom/Redirect";
@@ -96,7 +95,6 @@ class App extends React.Component {
             <Router>
                 <div className="app-container">
                     {currentUser && <div>
-                        <Flash/>
                         <Header currentUser={currentUser}/>
                         <Navigation currentUser={currentUser}/>
                         <ErrorDialog isOpen={errorDialogOpen}

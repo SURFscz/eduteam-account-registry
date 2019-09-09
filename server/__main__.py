@@ -19,7 +19,6 @@ from server.api.provision import provision_api
 from server.api.user import user_api
 from server.db.db import db, db_migrations
 from server.saml.service_provider import configure_saml
-from server.templates import invitation_role
 
 
 def read_file(file_name):
@@ -93,10 +92,6 @@ app.config["MAIL_SERVER"] = config.mail.host
 app.config["MAIL_PORT"] = int(config.mail.port)
 app.config["OPEN_MAIL_IN_BROWSER"] = os.environ.get("OPEN_MAIL_IN_BROWSER", 0)
 app.config["LOCAL"] = is_local
-
-app.jinja_env.globals.update({
-    "invitation_role": invitation_role,
-})
 
 app.mail = Mail(app)
 

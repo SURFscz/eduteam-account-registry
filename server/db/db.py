@@ -40,9 +40,6 @@ class User(Base, db.Model):
     remote_accounts = db.relationship("RemoteAccount", back_populates="user",
                                       cascade="all, delete-orphan",
                                       passive_deletes=True)
-    email_verifications = db.relationship("EmailVerification", back_populates="user",
-                                          cascade="all, delete-orphan",
-                                          passive_deletes=True)
     aups = db.relationship("Aup", back_populates="user",
                            cascade="all, delete-orphan",
                            passive_deletes=True)
@@ -79,7 +76,7 @@ class EmailVerification(Base, db.Model):
     code = db.Column("code", db.String(length=12), nullable=False)
     email = db.Column("email", db.String(length=255), nullable=True)
     user_id = db.Column(db.Integer(), db.ForeignKey("users.id"))
-    user = db.relationship("User", back_populates="email_verifications")
+    user = db.relationship("User")
     created_at = db.Column("created_at", db.DateTime(timezone=True), server_default=db.text("CURRENT_TIMESTAMP"),
                            nullable=False)
     expires_at = db.Column("expires_at", db.DateTime(timezone=True))

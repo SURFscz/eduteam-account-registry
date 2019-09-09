@@ -8,8 +8,7 @@ from werkzeug.exceptions import BadRequest
 
 from server.api.base import json_endpoint, query_param, session_user_key, ok_response, ctx_logger
 from server.db.db import User, RemoteAccount, Iuid, db, EmailVerification
-from server.db.defaults import default_expiry_date
-from server.db.models import flatten
+from server.db.defaults import default_expiry_date, EMAIL_REGEX, flatten
 
 user_api = Blueprint("user_api", __name__, url_prefix="/api/users")
 
@@ -81,12 +80,18 @@ def load_user():
     cuid = session[session_user_key]
     user = User.query \
         .join(User.remote_accounts) \
-        .outerjoin(User.email_verifications) \
         .options(contains_eager(User.remote_accounts)) \
-        .options(contains_eager(User.email_verifications)) \
         .filter(User.cuid == cuid) \
         .one()
     return user
+
+
+def _is_valid(obj):
+    if isinstance(obj, str):
+        return True if obj else False
+    if isinstance(obj, list):
+        return len(list(filter(lambda s: _is_valid(s), obj))) > 0
+    return False
 
 
 @user_api.route("/", methods=["PUT"], strict_slashes=False)
@@ -95,25 +100,46 @@ def update():
     user = load_user()
 
     attributes = current_request.get_json()
-    if "email" in attributes:
-        user.email_verifications = [
-            EmailVerification(code=token_urlsafe(6), email=email, expires_at=default_expiry_date) for email in
-            attributes["email"]]
+
+    allowed_keys = ["names", "emails", "phones", "address", "country", "refLanguage"]
+    for allowed_key in allowed_keys:
+        if allowed_key in attributes:
+            val = attributes[allowed_key]
+            if _is_valid(val):
+                user.attributes[allowed_key] = val
+
+    required_keys = ["names", "emails"]
+    for required_key in required_keys:
+        if required_key not in user.attributes:
+            raise BadRequest(f"Required key {required_key} not in user attributes")
+
+    if "emails" in attributes:
+        for email in attributes["emails"]:
+            if not EMAIL_REGEX.match(email):
+                raise BadRequest(f"Invalid email {email}")
+
+            db.session.merge(EmailVerification(code=token_urlsafe(6), user=user,
+                                               email=email, expires_at=default_expiry_date()))
 
     db.session.merge(user)
-    return user, 200
+    return user, 201
 
 
 @user_api.route("/complete", methods=["PUT"], strict_slashes=False)
 @json_endpoint
 def complete():
     user = load_user()
-    if len(user.email_verifications) > 0:
+    email_verifications_count = EmailVerification.query \
+        .join(EmailVerification.user) \
+        .filter(User.cuid == user.cuid) \
+        .count()
+
+    if email_verifications_count > 0:
         raise BadRequest(description="Outstanding email verifications")
 
     user.is_complete = True
     db.session.merge(user)
-    return {redirect_url_session_key: session[redirect_url_session_key]}, 200
+    return {redirect_url_session_key: session[redirect_url_session_key]}, 201
 
 
 @user_api.route("/login")
@@ -127,13 +153,17 @@ def login():
 def verify_email():
     cuid = session[session_user_key]
     code = current_request.get_json()["code"]
+    email = current_request.get_json()["email"]
 
     email_verification = EmailVerification.query \
         .join(EmailVerification.user) \
         .filter(User.cuid == cuid) \
         .filter(EmailVerification.code == code) \
-        .filter(EmailVerification.expires_at >= datetime.datetime.now()) \
+        .filter(EmailVerification.email == email) \
         .one()
+
+    if email_verification.expires_at < datetime.datetime.now():
+        raise BadRequest("Email verification is expired")
 
     db.session.delete(email_verification)
     return ok_response, 201

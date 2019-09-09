@@ -18,9 +18,9 @@ export default function Aup({user, ...props}) {
         <div className="mod-aup">
 
             <div className="intro">
-                <p>{<p dangerouslySetInnerHTML={{__html: I18n.t("aup.title1")}}/>}</p>
-                <p>{<p dangerouslySetInnerHTML={{__html: I18n.t("aup.title2")}}/>}</p>
-                <p>{<p dangerouslySetInnerHTML={{__html: I18n.t("aup.title3")}}/>}</p>
+                {<p dangerouslySetInnerHTML={{__html: I18n.t("aup.title1")}}/>}
+                {<p dangerouslySetInnerHTML={{__html: I18n.t("aup.title2")}}/>}
+                {<p dangerouslySetInnerHTML={{__html: I18n.t("aup.title3")}}/>}
             </div>
 
             <div className="htmlAup" dangerouslySetInnerHTML={{__html: aup.html}}/>
