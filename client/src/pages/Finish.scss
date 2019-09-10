@@ -1,0 +1,24 @@
+@import "../stylesheets/vars.scss";
+
+.mod-finish {
+  max-width: $medium;
+  width: 100%;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .1);
+  margin: 0 auto 25px auto;
+  background-color: white;
+  padding: $medium-padding;
+
+  div.intro {
+
+    p {
+      margin-bottom: 15px;
+    }
+  }
+
+
+  section.actions {
+    margin-top: 40px;
+  }
+
+
+}

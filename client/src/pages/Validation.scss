@@ -1,0 +1,102 @@
+@import "../stylesheets/vars.scss";
+
+.mod-validations {
+  max-width: $medium;
+  width: 100%;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .1);
+  margin: 0 auto 25px auto;
+  background-color: white;
+  padding: $medium-padding;
+
+  div.intro {
+
+    p {
+      margin-bottom: 15px;
+    }
+  }
+
+  div.validations-form {
+    margin-top: 15px;
+    width: 100%;
+
+  }
+
+  div.verification {
+    display: flex;
+    margin: 15px 0;
+    align-content: space-between;
+    align-items: center;
+    width: 100%;
+
+    &:first-child {
+      margin-top: 30px;
+    }
+
+    &:last-child {
+      margin-bottom: 30px;
+    }
+
+    svg {
+      margin-right: 5px;
+      display: inline-block;
+      font-size: 20px;
+
+      &.fa-envelope-open {
+        color: $red;
+      }
+
+      &.fa-envelope {
+        color: $green;
+      }
+
+    }
+
+    input[type=text] {
+      display: block;
+      width: 45%;
+      border: 1px solid $lighter-grey;
+      padding: 4px 10px 4px 4px;
+      border-radius: $br;
+      font-size: 14px;
+
+
+      &[disabled] {
+        background-color: $background;
+        cursor: not-allowed;
+      }
+
+      &.code {
+        max-width: 160px;
+      }
+
+    }
+
+    span.verification-status {
+      display: inline-block;
+      margin: 0 20px;
+    }
+
+  }
+
+  a.button.regenerate {
+    padding: 4px 15px;
+    margin-left: 20px;
+  }
+
+  a.button.green {
+    padding: 4px 15px;
+    margin-left: 40px;
+  }
+
+  span.error {
+    display: inline-block;
+    margin-left: 5px;
+    color: $red;
+  }
+
+  section.actions {
+    margin-top: 40px;
+  }
+
+
+}

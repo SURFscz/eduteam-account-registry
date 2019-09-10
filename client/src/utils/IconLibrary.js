@@ -8,9 +8,11 @@ import {
   faCheck,
   faPlus,
   faTrash,
-  faCircle
+  faCircle,
+  faEnvelopeOpen,
+  faEnvelope
 } from '@fortawesome/free-solid-svg-icons'
 
 export function addIcons() {
-  library.add(faGavel, faLink, faBook, faCircle, faCheck, faInfoCircle, faInfo, faPlus, faTrash);
+  library.add(faGavel, faLink, faBook, faEnvelopeOpen, faEnvelope, faCircle, faCheck, faInfoCircle, faInfo, faPlus, faTrash);
 }

@@ -65,6 +65,9 @@
     padding: $medium-padding;
     list-style: decimal;
     margin-bottom: $medium-padding;
+    li {
+      margin-bottom: 4px;
+    }
   }
 
 

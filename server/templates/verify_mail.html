@@ -1,0 +1,16 @@
+{% extends "mail_layout.html" %}
+{% block title %}eduTEAMS Account Registry email code{% endblock %}
+{% block content %}
+
+<p>{{ salutation }},</p>
+    <p/>
+    <p>Use the following code:</p>
+    <p/>
+    <p><strong>{{ code }}</strong></p>
+    <p/>
+    to verify the ownership of email <strong>{{email}}</strong>.
+
+</p>
+{% endblock %}
+
+

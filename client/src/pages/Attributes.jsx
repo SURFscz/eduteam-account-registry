@@ -136,12 +136,10 @@ class Attributes extends React.Component {
           <span className="error">{I18n.t("attributes.required", {name: I18n.t("attributes.name")})}</span>}
           {
             emails.map((email, index) =>
-              <div>
+              <div key={index}>
                 <InputField
-                  key={index}
                   value={email}
                   name={I18n.t("attributes.email")}
-                  index={index}
                   onBlur={this.validateEmail(index)}
                   placeholder={I18n.t("attributes.emailPlaceholder")}
                   onChange={this.changeAttr("emails", index)}

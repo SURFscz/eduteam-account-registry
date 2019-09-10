@@ -15,6 +15,8 @@ import {pseudoGuid} from "../utils/Utils";
 import Redirect from "react-router-dom/Redirect";
 import Aup from "./Aup";
 import Attributes from "./Attributes";
+import Validation from "./Validation";
+import Finish from "./Finish";
 
 addIcons();
 
@@ -82,8 +84,6 @@ class App extends React.Component {
         }
     }
 
-    refreshUser = () => me().then(json => this.setState({currentUser: json}));
-
     render() {
         const {
             loading, errorDialogAction, errorDialogOpen, currentUser
@@ -116,11 +116,10 @@ class App extends React.Component {
                                                               {...props}/>}/>
 
                         <Route exact path="/validate"
-                               render={props => <Registration user={currentUser}
-                                                              {...props}/>}/>
+                               render={props => <Validation user={currentUser} {...props}/>}/>
 
                         <Route exact path="/finish"
-                               render={props => <Registration user={currentUser}
+                               render={props => <Finish user={currentUser}
                                                               {...props}/>}/>
 
                         <Route path="/error" render={props => <ServerError {...props}/>}/>

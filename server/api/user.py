@@ -9,6 +9,7 @@ from werkzeug.exceptions import BadRequest
 from server.api.base import json_endpoint, query_param, session_user_key, ok_response, ctx_logger
 from server.db.db import User, RemoteAccount, Iuid, db, EmailVerification
 from server.db.defaults import default_expiry_date, EMAIL_REGEX, flatten
+from server.mail import mail_verify_mail
 
 user_api = Blueprint("user_api", __name__, url_prefix="/api/users")
 
@@ -22,6 +23,17 @@ def _merge_attributes(remote_attrs: dict, user_attrs: dict):
 
     return {key: list(set(val(remote_attrs, key) + val(user_attrs, key)))
             for key in set(remote_attrs) | set(user_attrs)}
+
+
+def _create_sent_email_verification(email, user):
+    ctx = {"salutation": f"Dear {user.attributes['names'][0]}"}
+
+    code = token_urlsafe(6)
+    db.session.merge(EmailVerification(code=code, user=user,
+                                       email=email, expires_at=default_expiry_date()))
+    ctx["code"] = code
+    ctx["email"] = email
+    mail_verify_mail(ctx, [email])
 
 
 @user_api.route("/check-identity", methods=["POST"], strict_slashes=False)
@@ -76,6 +88,16 @@ def me():
     return load_user(), 200
 
 
+@user_api.route("/verifications", strict_slashes=False)
+@json_endpoint
+def verifications():
+    email_verifications = EmailVerification.query \
+        .join(EmailVerification.user) \
+        .filter(User.cuid == session[session_user_key]) \
+        .all()
+    return [{"email": e.email, "verified": False} for e in email_verifications], 200
+
+
 def load_user():
     cuid = session[session_user_key]
     user = User.query \
@@ -102,6 +124,7 @@ def update():
     attributes = current_request.get_json()
 
     allowed_keys = ["names", "emails", "phones", "address", "country", "refLanguage"]
+    user.attributes = {};
     for allowed_key in allowed_keys:
         if allowed_key in attributes:
             val = attributes[allowed_key]
@@ -113,16 +136,30 @@ def update():
         if required_key not in user.attributes:
             raise BadRequest(f"Required key {required_key} not in user attributes")
 
+    remote_emails = []
+    for ra in user.remote_accounts:
+        if "mail" in ra.attributes:
+            mail = ra.attributes["mail"]
+            if isinstance(mail, list):
+                remote_emails = remote_emails + mail
+            if isinstance(mail, str):
+                remote_emails.append(mail)
+
     if "emails" in attributes:
         for email in attributes["emails"]:
             if not EMAIL_REGEX.match(email):
                 raise BadRequest(f"Invalid email {email}")
-
-            db.session.merge(EmailVerification(code=token_urlsafe(6), user=user,
-                                               email=email, expires_at=default_expiry_date()))
+            if email not in remote_emails:
+                _create_sent_email_verification(email, user)
 
     db.session.merge(user)
     return user, 201
+
+
+@user_api.route("/redirect_key", strict_slashes=False)
+@json_endpoint
+def redirect_key():
+    return {redirect_url_session_key: session[redirect_url_session_key]}, 200
 
 
 @user_api.route("/complete", methods=["PUT"], strict_slashes=False)
@@ -139,7 +176,7 @@ def complete():
 
     user.is_complete = True
     db.session.merge(user)
-    return {redirect_url_session_key: session[redirect_url_session_key]}, 201
+    return ok_response, 201
 
 
 @user_api.route("/login")
@@ -164,6 +201,24 @@ def verify_email():
 
     if email_verification.expires_at < datetime.datetime.now():
         raise BadRequest("Email verification is expired")
+
+    db.session.delete(email_verification)
+    return ok_response, 201
+
+
+@user_api.route("/regenerate", methods=["POST"], strict_slashes=False)
+@json_endpoint
+def regenerate_email():
+    cuid = session[session_user_key]
+    email = current_request.get_json()["email"]
+
+    email_verification = EmailVerification.query \
+        .join(EmailVerification.user) \
+        .filter(User.cuid == cuid) \
+        .filter(EmailVerification.email == email) \
+        .one()
+
+    _create_sent_email_verification(email, load_user())
 
     db.session.delete(email_verification)
     return ok_response, 201

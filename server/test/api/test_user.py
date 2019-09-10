@@ -82,3 +82,10 @@ class TestUser(AbstractTest):
         self.provision()
         res = self.put("api/users/complete", response_status_code=400)
         self.assertEqual("Outstanding email verifications", res["message"])
+
+    def test_verifications(self):
+        self.provision()
+        res = self.get("/api/users/verifications")
+        self.assertListEqual(
+            [{"email": "john.doe@example.org", "verified": False}, {"email": "jdoe@example.org", "verified": False}],
+            res)
