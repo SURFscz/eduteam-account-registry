@@ -22,9 +22,6 @@ stages:
   - 'coverage'
   - 'build'
 
-#############################################################
-# default stage "test" expanded with multiple python versions
-#############################################################
 python:
   - '3.7'
 cache:
@@ -36,9 +33,6 @@ script:
   - 'pytest server/test'
 
 
-#############################################################
-# other stages
-#############################################################
 jobs:
   include:
     - stage: 'flake8'
@@ -64,8 +58,6 @@ jobs:
         yarn: true
         directories:
           - 'node_modules'
-      services:
-        - 'docker'
       before_install:
         - 'rm -fr ~/.yarn'
       install:
@@ -80,6 +72,5 @@ jobs:
       script:
         - 'cd client'
         - 'yarn install'
-        - 'CI=true yarn test'
         - 'yarn build'
 
