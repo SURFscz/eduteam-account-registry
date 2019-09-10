@@ -14,4 +14,3 @@ class TestMail(AbstractTest):
             self.assertListEqual(["test@example.com"], mail_msg.recipients)
             self.assertEqual("eduTEAMS <no-reply@eduteams.org>", mail_msg.sender)
             self.assertTrue("123456" in mail_msg.html)
-

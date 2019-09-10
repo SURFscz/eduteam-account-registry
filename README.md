@@ -63,6 +63,7 @@ Point your browser to http://localhost:5000/api/users/login?redirect_url=http://
 
 To run all Python tests and validate syntax / formatting:
 ```
+source .venv/bin/activate
 pytest server/test
 flake8 ./server/
 ```

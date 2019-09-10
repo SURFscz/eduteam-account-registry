@@ -124,7 +124,7 @@ def update():
     attributes = current_request.get_json()
 
     allowed_keys = ["names", "emails", "phones", "address", "country", "refLanguage"]
-    user.attributes = {};
+    user.attributes = {}
     for allowed_key in allowed_keys:
         if allowed_key in attributes:
             val = attributes[allowed_key]

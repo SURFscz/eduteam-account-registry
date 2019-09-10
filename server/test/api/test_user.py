@@ -1,6 +1,6 @@
 from sqlalchemy import or_
 
-from server.db.db import User, EmailVerification, db
+from server.db.db import User, EmailVerification
 from server.test.abstract_test import AbstractTest
 from server.test.seed import john_iuids, john_cuid, source_entity_id, email_code, email_code_expired, john_email_second, \
     john_email
@@ -74,8 +74,10 @@ class TestUser(AbstractTest):
             .filter(or_(EmailVerification.code == email_code_expired, EmailVerification.code == email_code)) \
             .delete()
 
-        res = self.put("api/users/complete", response_status_code=201)
-        self.assertEqual(res["redirect_url"], "http://mock-sp")
+        self.put("api/users/complete", response_status_code=201)
+
+        res = self.get("/api/users/me")
+        self.assertEqual(True, res["is_complete"])
 
     def test_complete_outstanding_verifications(self):
         self.get("/api/users/login", query_data={"redirect_url": "http://mock-sp"}, response_status_code=302)
