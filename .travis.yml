@@ -1,0 +1,85 @@
+---
+language: 'python'
+
+services:
+  - 'mysql'
+
+dist: xenial
+
+# generic mysql init snippet for reuse below
+.mysql_init: &mysql_init
+  >
+    mysql -uroot -e "
+      DROP DATABASE IF EXISTS ear_test;
+      CREATE DATABASE IF NOT EXISTS ear_test;
+      CREATE USER 'ear'@'localhost' IDENTIFIED BY 'ear';
+      GRANT ALL PRIVILEGES ON *.* TO 'ear'@'localhost' WITH GRANT OPTION;
+    "
+
+stages:
+  - 'flake8'
+  - 'test'
+  - 'coverage'
+  - 'build'
+
+#############################################################
+# default stage "test" expanded with multiple python versions
+#############################################################
+python:
+  - '3.7'
+cache:
+  pip: true
+install:
+  - 'pip install -r ./server/requirements/test.txt'
+script:
+  - *mysql_init
+  - 'pytest server/test'
+
+
+#############################################################
+# other stages
+#############################################################
+jobs:
+  include:
+    - stage: 'flake8'
+      services: false
+      install:
+        - 'pip install flake8'
+      script:
+        - 'flake8 ./server/'
+      after_success: false
+
+    - stage: 'coverage'
+      install:
+        - 'pip install -r ./server/requirements/test.txt'
+        - 'pip install codecov'
+      script:
+        - *mysql_init
+        - 'pytest --cov=server server/test'
+      after_success:
+        - 'codecov --token=$CODECOV_TOKEN'
+
+    - stage: 'build'
+      cache:
+        yarn: true
+        directories:
+          - 'node_modules'
+      services:
+        - 'docker'
+      before_install:
+        - 'rm -fr ~/.yarn'
+      install:
+        - 'curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.12.3'
+        - 'export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"'
+        - 'yarn -v'
+        - 'nvm install v8.12.0'
+        - 'nvm use v8.12.0'
+      before_script:
+        - 'yarn -v'
+        - 'node -v'
+      script:
+        - 'cd client'
+        - 'yarn install'
+        - 'CI=true yarn test'
+        - 'yarn build'
+
