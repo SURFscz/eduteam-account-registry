@@ -14,7 +14,7 @@ class TestBase(AbstractTest):
     def test_config(self):
         res = self.client.get("/config")
         self.assertDictEqual(
-            {"base_url": "http://localhost:3000", "login_url": "http://localhost:5000/api/users/login"}, res.json)
+            {"base_url": "http://localhost:3000", "login_url": "http://localhost:8080/api/users/login"}, res.json)
 
     def test_info(self):
         git_info = self.client.get("/info").json["git"]

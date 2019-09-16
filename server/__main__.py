@@ -116,3 +116,7 @@ with app.app_context():
             time.sleep(1)
 
 db_migrations(config.database.uri)
+
+# WSGI production mode dictates that no flask app is actually running
+if is_local:
+    app.run(port=8080, debug=False, host="0.0.0.0", threaded=True)

@@ -21,8 +21,8 @@ mail:
 
 aup:
   pdf: eduTEAMS-AcceptableUsePolicy-050919-1109-5194.pdf
-  pdf_link: http://localhost:5000/static/eduTEAMS-AcceptableUsePolicy-050919-1109-5194.pdf
+  pdf_link: http://localhost:8080/static/eduTEAMS-AcceptableUsePolicy-050919-1109-5194.pdf
   html: eduTEAMS-AcceptableUsePolicy-050919-1109-5194.html
 
 base_url: http://localhost:3000
-login_url: http://localhost:5000/api/users/login
+login_url: http://localhost:8080/api/users/login
