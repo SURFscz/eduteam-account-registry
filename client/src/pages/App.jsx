@@ -12,7 +12,7 @@ import Registration from "./Registration";
 import Footer from "../components/Footer";
 import {addIcons} from "../utils/IconLibrary";
 import {pseudoGuid} from "../utils/Utils";
-import Redirect from "react-router-dom/Redirect";
+import { Redirect } from 'react-router-dom';
 import Aup from "./Aup";
 import Attributes from "./Attributes";
 import Validation from "./Validation";
