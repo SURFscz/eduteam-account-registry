@@ -19,12 +19,7 @@ from server.api.provision import provision_api
 from server.api.user import user_api
 from server.db.db import db, db_migrations
 from server.saml.service_provider import configure_saml
-
-
-def read_file(file_name):
-    file = f"{os.path.dirname(os.path.realpath(__file__))}/{file_name}"
-    with open(file) as f:
-        return f.read()
+from server.tools import read_file
 
 
 def _init_logging(is_test):
