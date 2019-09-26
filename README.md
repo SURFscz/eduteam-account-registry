@@ -1,5 +1,5 @@
 # eduTEAMS Account Registry
-[![Build Status](https://travis-ci.org/oharsta/eduteam-account-registry.svg?branch=master)](https://travis-ci.com/oharsta/eduteam-account-registry)
+[![Build Status](https://travis-ci.org/SURFscz/eduteam-account-registry.svg?branch=master)](https://travis-ci.org/SURFscz/eduteam-account-registry)
 [![codecov](https://codecov.io/gh/oharsta/eduteam-account-registry/branch/master/graph/badge.svg)](https://codecov.io/gh/oharsta/eduteam-account-registry)
 
 ### [Overview Requirements](#system-requirements)
