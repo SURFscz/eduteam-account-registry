@@ -11,6 +11,7 @@ from flask_migrate import Migrate
 from munch import munchify
 from sqlalchemy import text
 from sqlalchemy.exc import OperationalError
+import flasgger
 
 from server.api.aup import aup_api
 from server.api.base import base_api
@@ -68,6 +69,16 @@ logger = logging.getLogger("main")
 logger.info(f"Initialize server with profile {profile}")
 
 app = Flask(__name__)
+
+app.config['SWAGGER'] = {
+    'title': 'eduTEAMS User Registry',
+    'description': 'user registration application, which can be used to register federated user accounts',
+    'version': '0.1',
+    'openapi': '3.0.2',
+    'uiversion': 3,
+}
+swagger = flasgger.Swagger(app)
+
 app.secret_key = config.secret_key
 
 app.register_blueprint(base_api)

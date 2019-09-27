@@ -103,12 +103,45 @@ def json_endpoint(f):
 @base_api.route("/health", strict_slashes=False)
 @json_endpoint
 def health():
+    """Endpoint to check health of server API
+    Always returns 200 UP
+    ---
+    responses:
+      200:
+        description: Server is up and running
+        content:
+          "application/json":
+            schema:
+              type: object
+              properties: { status: { type: string } }
+              example: { status: "UP" }
+
+    """
     return {"status": "UP"}, 200
 
 
 @base_api.route("/config", strict_slashes=False)
 @json_endpoint
 def config():
+    """Get config of current application
+     Returns the base url and login url
+     ---
+     responses:
+       200:
+         description: success
+         content:
+           "application/json":
+             schema:
+               type: object
+               properties:
+                 base_url:
+                   type: string
+                   example: "http://localhost:1234/"
+                 login_url:
+                   type: string
+                   example: "https://localhost:1234/login"
+     """
+
     def clean_url(url):
         return url[:-1] if url.endswith("/") else url
 
@@ -121,8 +154,33 @@ def config():
 @base_api.route("/info", strict_slashes=False)
 @json_endpoint
 def info():
+    """Check version of the application
+     Returns the git commit of the running application
+     ---
+     responses:
+       200:
+         description: Return git commit of running application
+         content:
+           "application/json":
+             schema:
+               type: object
+               properties:
+                 git:
+                   type: string
+                   example: c49ff9a39726c40142b657d344ee3f354893fb5f
+       404:
+         description: No idea
+         content:
+           "application/json":
+             schema:
+               type: object
+               properties:
+                 git:
+                   type: string
+                   example: nope
+     """
     file = Path(f"{os.path.dirname(os.path.realpath(__file__))}/git.info")
     if file.is_file():
         with open(str(file)) as f:
             return {"git": f.read()}, 200
-    return {"git": "nope"}, 200
+    return {"git": "unknown"}, 418

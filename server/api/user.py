@@ -39,6 +39,58 @@ def _create_sent_email_verification(email, user):
 @user_api.route("/check-identity", methods=["POST"], strict_slashes=False)
 @json_endpoint
 def user_search():
+    """Search for a user by institutional identity (iuid)
+    Check if any of the specified iuids match an existing user.  If so, return the details of the user.
+    Note that we assume that the specified iuids are tied to a single user; the case that multiple iuids from the
+    specified set match different users is an explicit error condition; it means that an iuid (which is
+    supposed to be non-reassignable) has been reassigned from an existing user to a different user.
+    ---
+    definitions:
+      iuid:
+        type: string
+        format: 'sha256'
+        description: >
+          Hash representing a non-reassignable, globally unique, persistent user identifier as asserted by
+          the authenticating IdP
+        example: '4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865'
+      cuid:
+        type: string
+        format: uuid
+        description: User identifier
+        example: '9706aa89-6012-4ee1-99fa-87689f1a47b4'
+      iuid_set:
+        type: array
+        minItems: 1
+        items:
+          $ref: '#/definitions/iuid'
+        example:
+          - "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+          - "7de1555df0c2700329e815b93b32c571c3ea54dc967b89e81ab73b9972b72d1d"
+          - "f0b5c2c2211c8d67ed15e75e656c7862d086e9245420892a7de62cd9ec582a06"
+    requestBody:
+      description: list of iuids to match
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              iuid_set:
+                $ref: '#/definitions/iuid_set'
+    responses:
+      404:
+        description: No matching users found
+      409:
+        description: More than one users matched (should never hebben)
+      201:
+        description: Found a single matching user
+        content:
+          "application/json":
+            schema:
+              type: object
+              properties:
+                status: { type: "string", example: "ok" }
+    """
     iuid_values = current_request.get_json()["iuid"]
     users = User.find_by_iuid_values(iuid_values)
     if len(users) == 0:
@@ -68,6 +120,40 @@ def user_search():
 @user_api.route("/user-patch", methods=["PATCH"], strict_slashes=False)
 @json_endpoint
 def user_patch():
+    """Add iuids to a user
+    Add the specified iuids to the user record specified by the cuid
+    ---
+    requestBody:
+      description: user (cuid) to update and list of iuids to add to this user's record
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              cuid:
+                $ref: '#/definitions/cuid'
+              source_entity_id:
+                id: 'entityid'
+                description: 'entityid of the authenticating IdP'
+                type: string
+                format: url
+                example: 'https://idp.example.org/'
+              iuid:
+                $ref: '#/definitions/iuid_set'
+    responses:
+      404:
+        description: "Specified cuid doesn't match an existing user"
+      201:
+        description: "OK, iuids added"
+        content:
+          "application/json":
+            schema:
+              id: ok_response
+              type: object
+              properties:
+                status: { type: "string", example: "ok" }
+    """
     data = current_request.get_json()
     user_cuid = data["cuid"]
     source_entity_id = data["source_entity_id"]
