@@ -1,0 +1,54 @@
+# Template Apache config
+# You need to change this file before it can be used
+# At the very least, replace `/YOUR/VENV/DIR` by the directory of your Virtualenv
+# and replace `/YOUR/SOURCE/DIR` by the directory in which the code is present
+
+# adjust ports and ip addresses if required
+Listen :80
+<VirtualHost *:80>
+        # generic Apache config
+        ServerName uar.example.org
+        ServerAdmin webmaster@uar.example.org
+
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+        # Documentroot points to the client production build (result of `yarn
+        # build`)
+        DocumentRoot /YOUR/SOURCE/DIR/client/build
+
+        # Set tup the WSGI process; Apche will use the python interpreter (and
+        # libraries) thay is present in the virtualenv
+        # Make sure the user or gorup specified here have access to the
+        # log directory /YOUR/SOURCE/DIR/log
+        WSGIDaemonProcess uar python-home=/YOUR/VENV/DIR user=www-data group=www-data threads=5
+        WSGIProcessGroup uar
+        WSGIApplicationGroup %{GLOBAL}
+
+        # Describe the API endpoints that will be handled by WSGI
+        # All other urls will be fetched form docuemntroot and thus are client files
+        WSGIScriptAlias /api     /YOUR/SOURCE/DIR/uar-api.wsgi/api
+        WSGIScriptAlias /saml    /YOUR/SOURCE/DIR/uar-api.wsgi/saml
+        WSGIScriptAlias /health  /YOUR/SOURCE/DIR/uar-api.wsgi/health
+        WSGIScriptAlias /config  /YOUR/SOURCE/DIR/uar-api.wsgi/config
+        WSGIScriptAlias /info    /YOUR/SOURCE/DIR/uar-api.wsgi/info
+
+        # Security headers; adjust as necessary
+        Header set Content-Security-Policy "default-src 'self'; script-src 'self'; frame-ancestors 'none'; form-action 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;"
+        Header set X-Frame-Options "DENY"
+        Header set Referrer-Policy "same-origin"
+        Header set X-Content-Type-Options "nosniff"
+
+        # Allow access to source directory
+        <Directory /YOUR/SOURCE/DIR>
+            Require all granted
+        </Directory>
+
+        # Rewrite all client urls to index.html
+        <LocationMatch ^/>
+           RewriteEngine On
+           RewriteCond %{REQUEST_FILENAME} !-f
+           RewriteRule ^ /index.html [QSA,L]
+        </LocationMatch>
+</VirtualHost>
+# vim:ft=apache
