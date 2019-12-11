@@ -87,7 +87,7 @@ CI=true yarn test
 With the environment variable `CONFIG=config/test_config.yml` the test database is used. After you ran one or all of the
 tests the database is left with the test data seed.
 
-###[Deployment](#deployment)
+### [Deployment](#deployment)
 
 To run AUR in production, we suggest using an Apache server; a single configuration can be used to both serve the static
 client scripts, and serve the API (server) via wsgi.  Similar setups are probably possible using nginx etc.
