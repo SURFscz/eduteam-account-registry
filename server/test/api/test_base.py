@@ -18,7 +18,7 @@ class TestBase(AbstractTest):
 
     def test_info(self):
         git_info = self.client.get("/info").json["git"]
-        self.assertTrue("nope" in git_info)
+        self.assertTrue("unknown" in git_info)
 
     def test_info_stub(self):
         file = str(Path(f"{os.path.dirname(os.path.realpath(__file__))}/../../api/git.info"))
