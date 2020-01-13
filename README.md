@@ -31,7 +31,7 @@ GRANT ALL PRIVILEGES ON *.* TO 'ear'@'localhost' WITH GRANT OPTION;
 ```
 Ensure MySQL is running and run the Python server with the correct local environment setting:
 ```
-PROFILE=local CONFIG=config/test_config.yml python -m server
+PROFILE=local CONFIG=config/test_config.yml OPEN_MAIL_IN_BROWSER=1 python -m server
 ```
 With TESTING=1 no mails will be send. If you do want to validate the mails you can run a fake smtp server with:
 ```
