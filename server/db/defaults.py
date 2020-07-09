@@ -11,5 +11,5 @@ def default_expiry_date(json_dict=None):
     return datetime.datetime.today() + datetime.timedelta(days=15)
 
 
-def flatten(l):
-    return [item for sublist in l for item in sublist]
+def flatten(a_list):
+    return [item for sublist in a_list for item in sublist]

@@ -45,7 +45,7 @@ def _do_send_mail(subject, recipients, template, context):
 
 def mail_verify_mail(context, recipients):
     return _do_send_mail(
-        subject=f"eduTEAMS email verification code",
+        subject="eduTEAMS email verification code",
         recipients=recipients,
         template="verify_mail",
         context=context
